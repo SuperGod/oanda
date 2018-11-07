@@ -108,18 +108,6 @@ func init() {
 	}
 }
 
-const (
-
-	// InstrumentTypeCURRENCY captures enum value "CURRENCY"
-	InstrumentTypeCURRENCY string = "CURRENCY"
-
-	// InstrumentTypeCFD captures enum value "CFD"
-	InstrumentTypeCFD string = "CFD"
-
-	// InstrumentTypeMETAL captures enum value "METAL"
-	InstrumentTypeMETAL string = "METAL"
-)
-
 // prop value enum
 func (m *Instrument) validateTypeEnum(path, location string, value string) error {
 	if err := validate.Enum(path, location, value, instrumentTypeTypePropEnum); err != nil {

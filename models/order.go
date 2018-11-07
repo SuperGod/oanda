@@ -81,21 +81,6 @@ func init() {
 	}
 }
 
-const (
-
-	// OrderStatePENDING captures enum value "PENDING"
-	OrderStatePENDING string = "PENDING"
-
-	// OrderStateFILLED captures enum value "FILLED"
-	OrderStateFILLED string = "FILLED"
-
-	// OrderStateTRIGGERED captures enum value "TRIGGERED"
-	OrderStateTRIGGERED string = "TRIGGERED"
-
-	// OrderStateCANCELLED captures enum value "CANCELLED"
-	OrderStateCANCELLED string = "CANCELLED"
-)
-
 // prop value enum
 func (m *Order) validateStateEnum(path, location string, value string) error {
 	if err := validate.Enum(path, location, value, orderTypeStatePropEnum); err != nil {

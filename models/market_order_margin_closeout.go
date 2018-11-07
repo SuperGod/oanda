@@ -50,18 +50,6 @@ func init() {
 	}
 }
 
-const (
-
-	// MarketOrderMarginCloseoutReasonMARGINCHECKVIOLATION captures enum value "MARGIN_CHECK_VIOLATION"
-	MarketOrderMarginCloseoutReasonMARGINCHECKVIOLATION string = "MARGIN_CHECK_VIOLATION"
-
-	// MarketOrderMarginCloseoutReasonREGULATORYMARGINCALLVIOLATION captures enum value "REGULATORY_MARGIN_CALL_VIOLATION"
-	MarketOrderMarginCloseoutReasonREGULATORYMARGINCALLVIOLATION string = "REGULATORY_MARGIN_CALL_VIOLATION"
-
-	// MarketOrderMarginCloseoutReasonREGULATORYMARGINCHECKVIOLATION captures enum value "REGULATORY_MARGIN_CHECK_VIOLATION"
-	MarketOrderMarginCloseoutReasonREGULATORYMARGINCHECKVIOLATION string = "REGULATORY_MARGIN_CHECK_VIOLATION"
-)
-
 // prop value enum
 func (m *MarketOrderMarginCloseout) validateReasonEnum(path, location string, value string) error {
 	if err := validate.Enum(path, location, value, marketOrderMarginCloseoutTypeReasonPropEnum); err != nil {

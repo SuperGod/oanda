@@ -138,18 +138,6 @@ func init() {
 	}
 }
 
-const (
-
-	// TradeStateOPEN captures enum value "OPEN"
-	TradeStateOPEN string = "OPEN"
-
-	// TradeStateCLOSED captures enum value "CLOSED"
-	TradeStateCLOSED string = "CLOSED"
-
-	// TradeStateCLOSEWHENTRADEABLE captures enum value "CLOSE_WHEN_TRADEABLE"
-	TradeStateCLOSEWHENTRADEABLE string = "CLOSE_WHEN_TRADEABLE"
-)
-
 // prop value enum
 func (m *Trade) validateStateEnum(path, location string, value string) error {
 	if err := validate.Enum(path, location, value, tradeTypeStatePropEnum); err != nil {
