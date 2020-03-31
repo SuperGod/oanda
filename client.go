@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/SuperGod/oanda/client"
@@ -22,10 +24,16 @@ var (
 	TimeLayout           = time.RFC3339Nano
 )
 
+type AuthAccount interface {
+	SetAccountID(string)
+}
+
+type AuthDatetimeFormat interface {
+	SetAcceptDatetimeFormat(*string)
+}
+
 type AuthParam interface {
 	SetAuthorization(string)
-	SetAccountID(string)
-	SetAcceptDatetimeFormat(*string)
 	SetTimeout(time.Duration)
 }
 
@@ -35,6 +43,7 @@ type Oanda struct {
 	base         string
 	token        string
 	transport    *httptransport.Runtime
+	httpClient   *http.Client
 	accountAlias string // which account to use
 	accountID    string // fetch account use alias
 	symbol       string
@@ -56,15 +65,25 @@ func NewOandaWithURL(baseURL, name, token string) *Oanda {
 	o := new(Oanda)
 	o.name = name
 	o.base = baseURL
-
+	o.httpClient = &http.Client{Transport: &http.Transport{}}
 	cfg := client.DefaultTransportConfig()
 	cfg.Host = baseURL
-	o.transport = httptransport.New(cfg.Host, cfg.BasePath, cfg.Schemes)
+	o.transport = httptransport.NewWithClient(cfg.Host, cfg.BasePath, cfg.Schemes, o.httpClient)
 	o.api = client.New(o.transport, nil)
 	o.token = fmt.Sprintf("Bearer %s", token)
 	o.timeout = time.Second * 10
-	o.symbol = "EUR/USD"
+	o.symbol = "EUR_USD"
 	return o
+}
+
+func (o *Oanda) SetProxy(proxy string) (err error) {
+	proxyURL, err := url.Parse(proxy)
+	if err != nil {
+		return
+	}
+	httpTransport := o.httpClient.Transport.(*http.Transport)
+	httpTransport.Proxy = http.ProxyURL(proxyURL)
+	return
 }
 
 // SetSymbol set symbol
@@ -142,6 +161,19 @@ func (o *Oanda) GetAccountInfo(id string) (account *Account, err error) {
 	return
 }
 
+func (o *Oanda) GetInstruments() (instruments []*Instrument, err error) {
+	params := operations.NewGetAccountInstrumentsParams()
+	o.initParam(params)
+	params.AccountID = o.accountID
+	fmt.Println("param:", o.accountID)
+	ret, err := o.api.Operations.GetAccountInstruments(params)
+	if err != nil {
+		return
+	}
+	instruments = ret.Payload.Instruments
+	return
+}
+
 func (o *Oanda) initParam(param interface{}) {
 	authParam, ok := param.(AuthParam)
 	if !ok {
@@ -149,7 +181,13 @@ func (o *Oanda) initParam(param interface{}) {
 		return
 	}
 	authParam.SetAuthorization(o.token)
-	authParam.SetAccountID(o.accountID)
+	authAccount, ok := param.(AuthAccount)
+	if ok {
+		authAccount.SetAccountID(o.accountID)
+	}
 	authParam.SetTimeout(o.timeout)
-	authParam.SetAcceptDatetimeFormat(DtPtr)
+	authDatetimeFormat, ok := param.(AuthDatetimeFormat)
+	if ok {
+		authDatetimeFormat.SetAcceptDatetimeFormat(DtPtr)
+	}
 }

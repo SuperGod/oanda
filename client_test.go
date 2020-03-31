@@ -14,7 +14,7 @@ func getTestClient() *Oanda {
 	}
 	testApiClient = GetDebugClient()
 	testApiClient.FetchAccount()
-	testApiClient.SetSymbol("EUR/USD")
+	testApiClient.SetSymbol("EUR_USD")
 	return testApiClient
 }
 
@@ -26,5 +26,25 @@ func TestListAccounts(t *testing.T) {
 	}
 	for acc := range accounts {
 		t.Log(acc)
+	}
+}
+
+func TestProxy(t *testing.T) {
+	api := getTestClient()
+
+	err := api.SetProxy("socks5://127.0.0.1:1080")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	err = api.FetchAccount()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	rets, err := api.GetInstruments()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	for ret := range rets {
+		t.Log(ret)
 	}
 }
